@@ -1,0 +1,7 @@
+{
+  "name": "app-carga-credito",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
