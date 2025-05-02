@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'app-carga-credito',
+  appId: 'io.ionic.cargacredito',
+  appName: 'Carga Credito',
   webDir: 'www'
 };
 
