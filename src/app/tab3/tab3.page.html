@@ -1,32 +1,41 @@
-<ion-content [fullscreen]="true" >
+<ion-content [fullscreen]="true">
   <ion-grid>
     <ion-row>
-      <ion-col>        
-        <ion-card color="primary"  expand="block" >
+      <ion-col>
+        <ion-card color="primary" (click)="escanearQr()">
           <ion-label style="font-size: 35px;">
-            <ion-icon aria-hidden="true" name="qr-code-outline"></ion-icon>
+            <ion-icon name="qr-code-outline"></ion-icon>
             Escanear Créditos
           </ion-label>
         </ion-card>
       </ion-col>
     </ion-row>
 
+    <div *ngIf="mostrarScanner">
+      <zxing-scanner  (scanSuccess)="handleQrCodeResult($event)">
+      </zxing-scanner>
+    </div>
+
     <ion-row>
-      <ion-col>   
-        <ion-card color="primary"  expand="block" >
+      <ion-col>
+        <ion-card color="primary" (click)="verCreditos()">
           <ion-label style="font-size: 35px;">
-            <ion-icon aria-hidden="true" name="rocket-outline"></ion-icon>
-            Ver Créditos
+            <ion-icon name="rocket-outline"></ion-icon>
+            Créditos  : 
           </ion-label>
+          <ion-label style="font-size: 40px; justify-content: center;">              
+          {{ creditos }}
+          </ion-label>
+          
         </ion-card>
       </ion-col>
     </ion-row>
 
     <ion-row>
       <ion-col>
-        <ion-card color="primary"  expand="block" >
+        <ion-card color="primary" (click)="limpiar()">
           <ion-label style="font-size: 35px;">
-            <ion-icon aria-hidden="true" name="trash-outline"></ion-icon>
+            <ion-icon name="trash-outline"></ion-icon>
             Limpiar Créditos
           </ion-label>
         </ion-card>
@@ -35,4 +44,3 @@
 
   </ion-grid>
 </ion-content>
-

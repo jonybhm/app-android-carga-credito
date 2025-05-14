@@ -5,8 +5,11 @@ import { ErrorService } from '../../app/servicios/error-toast.service';
 import { onAuthStateChanged } from 'firebase/auth';
 import { signOut } from 'firebase/auth';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { addDoc,collection, Firestore,updateDoc } from '@angular/fire/firestore';
+import { addDoc,collection, Firestore,updateDoc,setDoc ,doc } from '@angular/fire/firestore';
 
+
+import { SpinnerService } from '../servicios/spinner.service';
+import { SonidosService } from '../servicios/sonidos.service';
 @Component({
   selector: 'app-tab4',
   templateUrl: './tab4.page.html',
@@ -34,6 +37,8 @@ export class Tab4Page implements OnInit {
     public auth:Auth,
     private error:ErrorService,
     private firestore:Firestore, 
+    private spinner: SpinnerService,
+    private sonido: SonidosService
 
   ) 
   {}
@@ -42,6 +47,13 @@ export class Tab4Page implements OnInit {
 
 
   ngOnInit() {
+    
+    this.spinner.show();
+
+    setTimeout(() => {
+      this.spinner.hide();
+    }, 2000);
+
     onAuthStateChanged(this.auth, (user) => {
       this.logueado = !!user;
     });
@@ -76,84 +88,56 @@ export class Tab4Page implements OnInit {
     this.mostrarFormRegistro = !this.mostrarFormRegistro;
   }
 
-  Registrarse()
-  {
-    createUserWithEmailAndPassword(this.auth, this.form.value.correo, this.form.value.clave).then((res) => {
-      if(res.user.email !== null) this.usuarioLogeado = res.user.email;
+  async Registrarse() {
 
-      const userDocRef = collection(this.firestore, 'usuarios');
-      addDoc(userDocRef, {
-        uid: res.user.uid,
+        this.sonido.ejecutarSonido('boton');
+
+    try {
+      const res = await createUserWithEmailAndPassword(this.auth, this.form.value.correo, this.form.value.clave);
+  
+      if (res.user.email !== null) this.usuarioLogeado = res.user.email;
+  
+      const uid = res.user.uid;
+      const userDocRef = doc(this.firestore, 'usuarios', uid);
+      
+      await setDoc(userDocRef, {
+        uid,
         correo: this.form.value.correo,
-        clave: this.form.value.clave,
+        clave: this.form.value.clave, // 🔒 Omitir en producción
         perfil: this.form.value.perfil,
         sexo: this.form.value.sexo,
         habilitado: true,
-
-      }).then((docRef) => {
-        updateDoc(docRef, { id: docRef.id }).then(() => {
-          console.log("ID usuario agregado al documento");
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-      }
-    );
-
+        codigosCargados: {},
+        creditos: 0
+      });
+  
       this.errorLogeo = false;
-      this.error.Toast.fire(
-        {
-          title:'Usuario creado con éxito',
-          icon:'success'
-        }
-      )
-      
-    }).catch((e) => {
+      this.error.Toast.fire({
+        title: 'Usuario creado con éxito',
+        icon: 'success'
+      });
+  
+    } catch (e: any) {
       this.errorLogeo = true;
   
-      switch(e.code)
-      {
+      switch (e.code) {
         case "auth/invalid-email":
-          this.error.Toast.fire(
-          {
-            title:"Email invalido",
-            icon:'error'
-          })  
-        break;
+          this.error.Toast.fire({ title: "Email inválido", icon: 'error' }); break;
         case "auth/email-already-in-use":
-          this.error.Toast.fire(
-          {
-            title:"Email ya se encuentra en uso",
-            icon:'error'
-          })  
-        break;
-        case "auth/invalid-password":
-          this.error.Toast.fire(
-          {
-            title:"Contraseña invalida",
-            icon:'error'
-          })  
-        break;
+          this.error.Toast.fire({ title: "Email ya en uso", icon: 'error' }); break;
         case "auth/weak-password":
-          this.error.Toast.fire(
-          {
-            title:"Contraseña muy débil",
-            icon:'error'
-          })  
-        break;        
+          this.error.Toast.fire({ title: "Contraseña muy débil", icon: 'error' }); break;
         default:
-          this.error.Toast.fire(
-          {
-            title:'Error en el registro',
-            icon:'error'
-          })  
-        break;
+          this.error.Toast.fire({ title: 'Error en el registro', icon: 'error' }); break;
       }
-    });  
+    }
   }
 
   IniciarSesion()
   {
+
+        this.sonido.ejecutarSonido('victoria');
+
     signInWithEmailAndPassword(this.auth, this.usuario, this.contrasena).then((res)=>{
       this.errorLogeo = false;
       this.error.Toast.fire(
@@ -211,6 +195,8 @@ export class Tab4Page implements OnInit {
 
   CerrarSesion() 
   {
+        this.sonido.ejecutarSonido('logout');
+
     signOut(this.auth).then(() => {
 
       this.usuario ="";

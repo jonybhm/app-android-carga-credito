@@ -1,0 +1,21 @@
+<ion-header [translucent]="true">
+
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-content>
+    
+    <ion-card ion-card color="light"  expand="block">              
+      <ion-toolbar>         
+        <ion-buttons slot="start">
+          <ion-button style="color: #8ef7bd;font-size: 15px" (click)="cerrar()">Cerrar
+            <ion-icon aria-hidden="true" name="close-sharp"></ion-icon>
+          </ion-button>
+        </ion-buttons>    
+      </ion-toolbar>    
+      <ion-card-content> 
+        <ion-label style="font-size: 30px;">{{ mensaje }}</ion-label>        
+      </ion-card-content>
+    </ion-card>
+  </ion-content>
+</ion-content>

@@ -13,7 +13,11 @@ const routes: Routes = [
   {
     path: 'splash',
     loadChildren: () => import('./splash/splash.module').then( m => m.SplashPageModule)
+  },  {
+    path: 'mensaje-modal',
+    loadChildren: () => import('./mensaje-modal/mensaje-modal.module').then( m => m.MensajeModalPageModule)
   }
+
 
 ];
 @NgModule({
